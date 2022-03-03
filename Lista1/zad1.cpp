@@ -7,6 +7,8 @@ class GameOfLife : public olc::PixelGameEngine
 {
 public:
 	bool runSimulation = false;
+	int stepNumber = 0;
+	double totalTime = 0;
 	std::vector<std::vector<bool>> grid;
 	std::vector<std::pair<int, int>> changes;
 	std::vector<std::pair<int, int>> adjPositions =
@@ -26,6 +28,9 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		if (stepNumber == 1000)
+			std::cout << totalTime << "\n";
+
 		// Events
 		if (GetKey(olc::Key::SPACE).bReleased)
 			runSimulation = !runSimulation;
@@ -46,6 +51,9 @@ public:
 				else
 					Draw(x, y, olc::Pixel(0, 0, 0));
 
+		// Time
+		totalTime += fElapsedTime;
+
 		return true;
 	}
 
@@ -64,13 +72,9 @@ public:
 				int neighbors = 0;
 				for (auto pos : adjPositions)
 				{
-					try
-					{
-						neighbors += grid.at(x + pos.first).at(y + pos.second);
-					}
-					catch (...)
-					{
-					}
+					if (x + pos.first < 0 || x + pos.first > grid.size() - 1 || y + pos.second < 0 || y + pos.second > grid[x].size() - 1)
+						continue;
+					neighbors += grid.at(x + pos.first).at(y + pos.second);
 				}
 
 				// Execute rules
@@ -83,13 +87,15 @@ public:
 
 		for (auto pos : changes)
 			grid[pos.first][pos.second] = !grid[pos.first][pos.second];
+		
+		stepNumber++;
 	}
 };
 
 int main()
 {
 	GameOfLife game;
-	if (game.Construct(256, 256, 4, 4, false, true))
+	if (game.Construct(100, 100, 5, 5))
 		game.Start();
 
 	return 0;
