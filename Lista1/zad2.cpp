@@ -9,15 +9,17 @@ class GameOfLife : public olc::PixelGameEngine
 {
 public:
 	int width, height;
-	bool runSimulation = false;
+	bool runSimulation = true;
 
 	int stepNumber = 0;
+	int simulationNumber = 0;
 	int population = 0;
 
 	double totalTime = 0;
 	
 	std::vector<std::vector<bool>> grid;
 	std::vector<std::pair<int, int>> changes;
+	std::vector<int> probabilties = {5, 10, 30, 60, 75, 80, 95};
 	std::vector<std::pair<int, int>> adjPositions =
 		{{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 
@@ -39,6 +41,15 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		if (stepNumber == 1500)
+		{
+			file.close();
+			if (simulationNumber < probabilties.size() - 1)
+				simulationNumber++;
+			stepNumber = 0;
+			setup();
+		}
+
 		// Events
 		if (GetKey(olc::Key::SPACE).bReleased)
 			runSimulation = !runSimulation;
@@ -69,7 +80,15 @@ public:
 
 	void setup()
 	{
-		grid.resize(width, std::vector<bool>(height, false));	
+		grid.resize(width, std::vector<bool>(height, false));
+
+		std::mt19937 rng(time(0));
+		std::uniform_int_distribution<int> dist(0, 100);
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
+				grid[x][y] = dist(rng) < probabilties[simulationNumber];
+
+		file.open("Data_" + std::to_string(probabilties[simulationNumber]) + "%.txt");		
 	}
 
 	void nextStep()
@@ -102,6 +121,7 @@ public:
 		for (auto pos : changes)
 			grid[pos.first][pos.second] = !grid[pos.first][pos.second];
 
+		file << stepNumber << "\t" << population << "\n";
 		stepNumber++;
 	}
 };
@@ -109,7 +129,7 @@ public:
 int main()
 {
 	GameOfLife game;
-	if (game.Construct(100, 100, 10, 10))
+	if (game.Construct(100, 100, 5, 5))
 		game.Start();
 
 	return 0;
