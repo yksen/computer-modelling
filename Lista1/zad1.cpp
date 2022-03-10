@@ -85,11 +85,7 @@ public:
 				// Count neighbors
 				int neighbors = 0;
 				for (auto pos : adjPositions)
-				{
-					if (x + pos.first < 0 || x + pos.first > grid.size() - 1 || y + pos.second < 0 || y + pos.second > grid[x].size() - 1)
-						continue;
-					neighbors += grid[x + pos.first][y + pos.second];
-				}
+					neighbors += grid[(x + pos.first + width) % width][(y + pos.second + height) % height];
 
 				// Execute rules
 				bool alive = grid[x][y];
