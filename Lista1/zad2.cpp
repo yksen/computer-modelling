@@ -19,7 +19,7 @@ public:
 	
 	std::vector<std::vector<bool>> grid;
 	std::vector<std::pair<int, int>> changes;
-	std::vector<int> probabilties = {5, 10, 30, 60, 75, 80, 95};
+	std::vector<double> probabilties = {0.05, 0.10, 0.30, 0.60, 0.75, 0.80, 0.95};
 	std::vector<std::pair<int, int>> adjPositions =
 		{{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 
@@ -45,9 +45,13 @@ public:
 		{
 			file.close();
 			if (simulationNumber < probabilties.size() - 1)
+			{
 				simulationNumber++;
-			stepNumber = 0;
-			setup();
+				stepNumber = 0;
+				setup();
+			}
+			else
+				runSimulation = false;
 		}
 
 		// Events
@@ -86,9 +90,9 @@ public:
 		std::uniform_int_distribution<int> dist(0, 100);
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++)
-				grid[x][y] = dist(rng) < probabilties[simulationNumber];
+				grid[x][y] = dist(rng) < (probabilties[simulationNumber] * 100);
 
-		file.open("Data_" + std::to_string(probabilties[simulationNumber]) + "%.txt");		
+		file.open("data/data_" + std::to_string(probabilties[simulationNumber]).substr(0, 4) + "%.txt");		
 	}
 
 	void nextStep()
