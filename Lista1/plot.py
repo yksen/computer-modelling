@@ -2,7 +2,7 @@ from cProfile import label
 import os
 import matplotlib.pyplot as plt
 
-path = "data/"
+path = "data/zad2/"
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
 for file in files:
