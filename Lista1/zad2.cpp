@@ -92,7 +92,7 @@ public:
 			for (int y = 0; y < height; y++)
 				grid[x][y] = dist(rng) < (probabilties[simulationNumber] * 100);
 
-		file.open("data/data_" + std::to_string(probabilties[simulationNumber]).substr(0, 4) + "%.txt");		
+		file.open("data/zad2/data_" + std::to_string(probabilties[simulationNumber]).substr(0, 4) + "%.txt");		
 	}
 
 	void nextStep()

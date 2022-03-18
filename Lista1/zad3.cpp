@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <math.h>
+#include <fstream>
 
 class GameOfLife : public olc::PixelGameEngine
 {
@@ -11,30 +12,30 @@ public:
 	bool runSimulation = true;
 	bool drawSimulation = false;
 	int width, height;
-    int gridSize;
+	int gridSize;
 
 	int stepNumber = 0;
 	int simulationNumber = 0;
-	int population = 0;
-	double populationSum = 0;
-	std::vector<double> averagePopulations;
+	double population = 0;
+	std::vector<double> populations;
 	double totalTime = 0;
 	double prevTime = 0;
 
-    const int maxStepNumber = 1000;
-    const int maxSimulationNumber = 100;
+	const int maxStepNumber = 1000;
+	const int maxSimulationNumber = 100;
 	const double probability = 0.60;
-	
+
 	std::vector<std::vector<bool>> grid;
 	std::vector<std::pair<int, int>> changes;
 	std::vector<std::pair<int, int>> adjPositions =
 		{{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
-	
+
+	std::ofstream file;
+
 public:
-	GameOfLife(int size = 100)
+	GameOfLife(int size) : gridSize(size)
 	{
 		sAppName = "Game of Life";
-		gridSize = size;
 	}
 
 	bool OnUserCreate() override
@@ -46,7 +47,7 @@ public:
 	}
 
 	bool OnUserUpdate(float fElapsedTime) override
-	{		
+	{
 		// Events
 		if (drawSimulation)
 		{
@@ -73,29 +74,31 @@ public:
 					else
 						Draw(x, y, olc::Pixel(0, 0, 0));
 
-        // Next simulation
-        if (stepNumber == maxStepNumber)
+		// Next simulation
+		if (stepNumber == maxStepNumber)
 		{
 			if (simulationNumber < maxSimulationNumber)
 			{
-                std::cout << "Simulation number: " << simulationNumber << "\tTime elapsed: " << totalTime - prevTime << "\tDensity: " << (populationSum / maxStepNumber) / (width * height) << "\n";
+				// file.open("data/zad3/data1000.txt", std::ios::app);
+				// file << simulationNumber << "\t" << population / (width * height) << "\n";
+				// file.close();
+				std::cout << "Simulation number: " << simulationNumber << "\tTime elapsed: " << totalTime - prevTime << "\tDensity: " << population / (width * height) << "\n";
 				prevTime = totalTime;
-				averagePopulations.push_back(populationSum / maxStepNumber);
-				populationSum = 0;
+				populations.push_back(population);
 				simulationNumber++;
 				stepNumber = 0;
 				setup();
 			}
 			else
-            {
-                std::cout << "Done in " << totalTime << " seconds.\n";
-				
+			{
+				std::cout << "Done in " << totalTime << " seconds.\n";
+
 				double sum = 0;
-				for (double pop : averagePopulations)
+				for (double pop : populations)
 					sum += pop / (width * height);
 				double average = sum / maxSimulationNumber;
 				double devSum = 0;
-				for (double pop : averagePopulations)
+				for (double pop : populations)
 					devSum += std::pow(pop / (width * height) - average, 2);
 				double sd = std::sqrt(devSum / maxSimulationNumber);
 				double standardError = sd / std::sqrt(maxSimulationNumber);
@@ -108,7 +111,7 @@ public:
 				std::cout << "> Standard error = " << standardError << "\n";
 
 				return false;
-            }
+			}
 		}
 
 		// Time
@@ -119,6 +122,7 @@ public:
 
 	void setup()
 	{
+		grid.clear();
 		grid.resize(width, std::vector<bool>(height, false));
 
 		std::mt19937 rng(time(0));
@@ -154,19 +158,17 @@ public:
 		for (auto pos : changes)
 			grid[pos.first][pos.second] = !grid[pos.first][pos.second];
 
-		populationSum += population;
 		stepNumber++;
 	}
 };
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-	if (argc > 1)
-	{
-		GameOfLife game(std::stoi(argv[1]));
-		if (game.Construct(10, 10, 10, 10))
-			game.Start();
-	}
+	if (argc < 2)
+		return 0;
+	GameOfLife game(std::stoi(argv[1]));
+	if (game.Construct(10, 10, 10, 10))
+		game.Start();
 
 	return 0;
 }

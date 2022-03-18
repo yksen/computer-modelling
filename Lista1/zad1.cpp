@@ -8,6 +8,10 @@
 class GameOfLife : public olc::PixelGameEngine
 {
 public:
+	enum Pattern {
+		glider
+	};
+
 	int width, height;
 	bool runSimulation = false;
 
@@ -15,7 +19,7 @@ public:
 	int population = 0;
 
 	double totalTime = 0;
-	
+
 	std::vector<std::vector<bool>> grid;
 	std::vector<std::pair<int, int>> changes;
 	std::vector<std::pair<int, int>> adjPositions =
@@ -44,6 +48,8 @@ public:
 			runSimulation = !runSimulation;
 		if (GetKey(olc::Key::SHIFT).bReleased)
 			nextStep();
+		if (GetKey(olc::Key::G).bReleased)
+			placePattern(GetMouseX(), GetMouseY());
 		if (GetMouse(0).bHeld)
 			grid[GetMouseX()][GetMouseY()] = true;
 		if (GetMouse(1).bHeld)
@@ -69,7 +75,7 @@ public:
 
 	void setup()
 	{
-		grid.resize(width, std::vector<bool>(height, false));	
+		grid.resize(width, std::vector<bool>(height, false));
 	}
 
 	void nextStep()
@@ -99,6 +105,15 @@ public:
 			grid[pos.first][pos.second] = !grid[pos.first][pos.second];
 
 		stepNumber++;
+	}
+
+	void placePattern(int x, int y)
+	{
+		grid[x][(y - 1 + height) % height] = true;
+		grid[(x - 1 + width) % width][y] = true;
+		grid[(x - 1 + width) % width][(y + 1 + height) % height] = true;
+		grid[x][(y + 1 + height) % height] = true;
+		grid[(x + 1 + width) % width][(y + 1 + height) % height] = true;
 	}
 };
 
