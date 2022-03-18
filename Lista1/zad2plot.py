@@ -13,8 +13,9 @@ for file in files:
             data = [int(s) for s in line.split() if s.isdigit()]
             x.append(data[0])
             y.append(data[1] / 10000)
-        plt.plot(x, y, label=file[5:9], linewidth=0.75)
+        plt.plot(x, y, label="p0 = " + file[5:9], linewidth=0.75)
 
+plt.axhline(0.02871, label="Wartość graniczna gęstości", linestyle="--", linewidth=1)
 plt.xlabel("Czas")
 plt.ylabel("Gęstość")
 plt.legend()
