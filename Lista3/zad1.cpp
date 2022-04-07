@@ -137,7 +137,7 @@ public:
         centerofMass.first /= aliveCount;
         centerofMass.second /= aliveCount;
 
-        int radius = 0;
+        double radius = 0;
         int borderCount = 0;
         for (int x = 0; x < width; ++x)
             for (int y = 0; y < height; ++y)
