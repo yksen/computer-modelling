@@ -9,7 +9,7 @@ class Snowflakes : public olc::PixelGameEngine
 public:
     bool runSimulation = false;
     int width, height;
-    int neighborsNeeded = 2;
+    int neighborsNeeded = 1;
 
     std::vector<std::vector<bool>> grid;
     std::mt19937 mt;

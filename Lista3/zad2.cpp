@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include <fstream>
+#include <cmath>
 
 struct Cell
 {
@@ -18,9 +19,11 @@ struct Cell
 class DLA : public olc::PixelGameEngine
 {
 public:
-    bool runSimulation = false;
+    bool runSimulation = true;
     int width, height;
+    int furthestCoordinate;
     int n = 0;
+    int prevCount = 0;
 
     std::vector<std::vector<Cell>> grid;
     std::vector<std::pair<int, int>> adjPositions =
@@ -41,8 +44,10 @@ public:
         mt.seed(time(NULL));
         width = ScreenWidth();
         height = ScreenHeight();
+        furthestCoordinate = 0;
         grid.resize(width, std::vector<Cell>(height));
-        grid[width / 2][height / 2] = Cell(true, true, false);
+        grid[width / 2][height / 2] = Cell(true, true, true);
+        spawnWanderers();
         return true;
     }
 
@@ -53,6 +58,8 @@ public:
             runSimulation = !runSimulation;
         if (GetKey(olc::Key::SHIFT).bReleased)
             nextStep();
+        if (GetKey(olc::Key::S).bReleased)
+            spawnWanderers();
         if (GetMouse(0).bHeld)
             grid[GetMouseX()][GetMouseY()] = Cell(true, false, false);
         if (GetMouse(1).bHeld)
@@ -68,12 +75,25 @@ public:
             for (int y = 0; y < height; ++y)
                 if (grid[x][y].alive)
                     if (grid[x][y].inCluster)
-                        Draw(x, y, olc::DARK_GREEN);
+                        if (grid[x][y].onBorder)
+                            Draw(x, y, olc::DARK_GREEN);
+                        else
+                            Draw(x, y, olc::GREEN);
                     else
                         Draw(x, y, olc::YELLOW);
-        // drawRadius();
+        drawRadius();
 
         return true;
+    }
+
+    void spawnWanderers()
+    {
+        double radius = furthestCoordinate + 10;
+        std::uniform_int_distribution<int> dist(0, 9);
+        for (int x = 0; x < width; ++x)
+            for (int y = 0; y < height; ++y)
+                if (std::pow(x - width / 2, 2) + std::pow(y - height / 2, 2) > radius * radius && !dist(mt))
+                    grid[x][y] = Cell(true, false, false);
     }
 
     void nextStep()
@@ -86,10 +106,10 @@ public:
                     std::vector<std::vector<std::pair<int, int>>::iterator> toErase;
                     for (auto it = neighbors.begin(); it != neighbors.end(); ++it)
                         if (grid[it->first][it->second].inCluster)
-                            grid[x][y].inCluster = true;
+                            grid[x][y] = Cell(true, true, true);
                         else if (grid[it->first][it->second].alive)
                             toErase.push_back(it);
-                    
+
                     for (auto it = toErase.begin(); it != toErase.end(); ++it)
                         neighbors.erase(*it);
 
@@ -120,8 +140,11 @@ public:
         int aliveCount = 0;
         for (int x = 0; x < width; ++x)
             for (int y = 0; y < height; ++y)
-                if (grid[x][y].alive)
+                if (grid[x][y].alive && grid[x][y].inCluster)
                 {
+                    int coordinate = std::max(std::abs(x - width / 2), std::abs(y - height / 2));
+                    if (coordinate > furthestCoordinate)
+                        furthestCoordinate = coordinate;
                     centerofMass.first += x;
                     centerofMass.second += y;
                     ++aliveCount;
@@ -129,20 +152,24 @@ public:
         centerofMass.first /= aliveCount;
         centerofMass.second /= aliveCount;
 
-        int radius = 0;
+        double radius = 0;
         int borderCount = 0;
         for (int x = 0; x < width; ++x)
             for (int y = 0; y < height; ++y)
-                if (grid[x][y].alive && grid[x][y].onBorder)
+                if (grid[x][y].alive && grid[x][y].inCluster && grid[x][y].onBorder)
                 {
                     radius += std::sqrt(std::pow(x - centerofMass.first, 2) + std::pow(y - centerofMass.second, 2));
                     ++borderCount;
                 }
         radius /= borderCount;
 
-        file.open("data/zad1.txt", std::ofstream::app);
-        file << n << " " << std::pow(n, 0.5) << " " << radius << "\n";
-        file.close();
+        if (prevCount != aliveCount)
+        {
+            file.open("data/zad2.txt", std::ofstream::app);
+            file << aliveCount << " " << radius << "\n";
+            file.close();
+        }
+        prevCount = aliveCount;
 
         DrawCircle(centerofMass.first, centerofMass.second, radius);
     }
@@ -151,7 +178,7 @@ public:
 int main()
 {
     DLA game;
-    if (game.Construct(1001, 1001, 1, 1))
+    if (game.Construct(501, 501, 2, 2))
         game.Start();
 
     return 0;
