@@ -17,19 +17,24 @@ void ofApp::setup()
         for (int y = 0; y < H; ++y)
         {
             int idx = x + y * W;
-            if (dist(mt) < 0.5)
-                A1cpu[idx] = 0.0f;
-            else
+            if (dist(mt) < 0.4)
+            {
                 A1cpu[idx] = 1.0f;
-            A2cpu[idx] = 0.0f;
+                A2cpu[idx] = 1.0f;
+            }
+            else
+            {
+                A1cpu[idx] = 0.0f;
+                A2cpu[idx] = 0.0f;
+            }
         }
     // for (int x = 0; x < W; ++x)
     //     for (int y = 0; y < H; ++y)
     //     {
     //         int idx = x + y * W;
-    //         if (y >= H / 2 - 50 
-    //          && y <= H / 2 + 50 
-    //          && x >= W / 2 - 50 
+    //         if (y >= H / 2 - 50
+    //          && y <= H / 2 + 50
+    //          && x >= W / 2 - 50
     //          && x <= W / 2 + 50)
     //             A1cpu[idx] = 1.0f;
     //         else
@@ -50,7 +55,7 @@ void ofApp::update()
     c = 1 - c;
     A1.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + c);
     A2.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + 1 - c);
-    
+
     shader.begin();
     shader.dispatchCompute(W / 20, H / 20, 1);
     shader.end();

@@ -24,27 +24,27 @@ void main()
 
     int index = x + y * W;
 
-    int innerRadius = 3;
-    int outerRadius = 11;
+    float innerRadius = 20;
+    float outerRadius = 30;
 
     int innerAliveCount = 0;
     int innerCellsCount = 0;
     int outerAliveCount = 0;
     int outerCellsCount = 0;
 
-    for (int i = x - outerRadius; i <= x + outerRadius; ++i)
-        for (int j = y - outerRadius; j <= y + outerRadius; ++j)
+    for (int i = x - int(outerRadius); i < x + int(outerRadius); ++i)
+        for (int j = y - int(outerRadius); j < y + int(outerRadius); ++j)
         {
             int i2 = per(i, W);
             int j2 = per(j, H);
             int index2 = i2 + j2 * W;
-            if (distance(vec2(x, y), vec2(i, j)) <= float(innerRadius))
+            if (distance(vec2(x, y), vec2(i, j)) <= innerRadius)
             {
                 ++innerCellsCount;
                 if (A1[index2] == 1.0f)
                     ++innerAliveCount;
             }
-            if (distance(vec2(x, y), vec2(i, j)) <= float(outerRadius) && distance(vec2(x, y), vec2(i, j)) > float(innerRadius))
+            if (distance(vec2(x, y), vec2(i, j)) >= innerRadius && distance(vec2(x, y), vec2(i, j)) <= outerRadius)
             {
                 ++outerCellsCount;
                 if (A1[index2] == 1.0f)
@@ -52,7 +52,7 @@ void main()
             }
         }
     float innerDensity = float(innerAliveCount) / float(innerCellsCount);
-    float outerDensity = float(outerAliveCount) / float(outerCellsCount - innerCellsCount);
+    float outerDensity = float(outerAliveCount) / float(outerCellsCount);
 
     if (innerDensity >= 0.210f && innerDensity <= 0.220f)
     {
@@ -72,11 +72,11 @@ void main()
     }
     if (outerDensity >= 0.430f && outerDensity <= 0.550f)
     {
-        A1[index] = 1.0f;
+        A1[index] = 0.0f;
     }
     if (innerDensity >= 0.120f && innerDensity <= 0.150f)
     {
-        A1[index] = 0.0f;
+        A1[index] = 1.0f;
     }
 
     // if (innerDensity >= 0.185f && innerDensity <= 0.200f)
