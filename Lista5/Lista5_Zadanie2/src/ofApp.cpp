@@ -17,7 +17,7 @@ void ofApp::setup()
         for (int y = 0; y < H; ++y)
         {
             int idx = x + y * W;
-            if (dist(mt) < 0.3)
+            if (dist(mt) < 0.25)
             {
                 A1cpu[idx] = 1.0f;
                 A2cpu[idx] = 1.0f;

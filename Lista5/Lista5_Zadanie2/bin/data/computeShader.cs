@@ -55,7 +55,7 @@ void main()
     
     int outers1[MAX_SIZE] = {14,  0,  0,  0};
     int outers2[MAX_SIZE] = { 1,  5,  8,  0};
-    int outers3[MAX_SIZE] = {10,  0,  0,  0};
+    int outers3[MAX_SIZE] = {11,  0,  0,  0};
     int outers4[MAX_SIZE] = { 2,  7, 10, 15};
 
     float density1 = neighborhoodDensity(inners1, outers1, 1, pos);
@@ -133,7 +133,7 @@ void main()
 
     A2[index] = A1[index];
 
-    vec4 col = vec4(A1[index], A1[index], A1[index], 1);
+    vec4 col = vec4(A1[index] * pos.x / float(W), A1[index] * pos.y / float(H), A1[index], 1);
     imageStore(img, ivec2(gl_GlobalInvocationID.xy), col);
 }
 
