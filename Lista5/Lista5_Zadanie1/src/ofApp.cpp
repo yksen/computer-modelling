@@ -1,5 +1,7 @@
 #include "ofApp.h"
 #include <iostream>
+#include <fstream>
+
 void ofApp::setup()
 {
     shader.setupShaderFromFile(GL_COMPUTE_SHADER, "computeShader.cs");
@@ -26,13 +28,41 @@ void ofApp::setup()
 }
 
 //--------------------------------------------------------------
+int tick = 0;
+
 void ofApp::update()
 {
     static int c = 1;
     c = 1 - c;
     A1.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + c);
     A2.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + 1 - c);
-    
+
+    float *data1, *data2;
+    float density1 = 0.0f, density2 = 0.0f;
+    data1 = A1.map<float>(GL_READ_ONLY);
+    data2 = A2.map<float>(GL_READ_ONLY);
+    for (int i = 0; i < W * H; ++i)
+    {
+        density1 += data1[i];
+        density2 += data2[i];
+    }
+    A1.unmap();
+    A2.unmap();
+
+    if (tick > 0)
+    {
+        density1 /= float(W * H);
+        density2 /= float(W * H);
+
+        float ratio = density1 / density2;
+
+        std::ofstream file("density.txt", ios::app);
+        file << tick << "\t" << ratio << std::endl;
+        file.close();
+    }
+
+    ++tick;
+
     shader.begin();
     shader.dispatchCompute(W / 20, H / 20, 1);
     shader.end();
