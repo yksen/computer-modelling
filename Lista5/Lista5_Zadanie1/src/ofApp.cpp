@@ -1,6 +1,7 @@
 #include "ofApp.h"
 #include <iostream>
 #include <fstream>
+#include <random>
 
 void ofApp::setup()
 {
@@ -10,14 +11,17 @@ void ofApp::setup()
     texture.allocate(W, H, GL_RGBA8);
     texture.bindAsImage(4, GL_WRITE_ONLY);
 
+    std::mt19937 mt(time(NULL));
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+
     for (int x = 0; x < W; x++)
         for (int y = 0; y < H; y++)
         {
             int idx = x + y * W;
-            if (rand() / float(RAND_MAX) < 0.5)
-                A1cpu[idx] = 0.0f;
-            else
+            if (dist(mt) < 0.25f)
                 A1cpu[idx] = 1.0f;
+            else
+                A1cpu[idx] = 0.0f;
             A2cpu[idx] = 0.0f;
         }
 
@@ -29,6 +33,10 @@ void ofApp::setup()
 
 void ofApp::update()
 {
+    static int c = 1;
+    c = 1 - c;
+    A1.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + c);
+    A2.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + 1 - c);
 
     float density1 = 0.0f, density2 = 0.0f;
     float *data1, *data2;
@@ -43,11 +51,6 @@ void ofApp::update()
         }
     A1.unmap();
     A2.unmap();
-
-    static int c = 1;
-    c = 1 - c;
-    A1.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + c);
-    A2.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + 1 - c);
 
     if (tick > 0)
     {

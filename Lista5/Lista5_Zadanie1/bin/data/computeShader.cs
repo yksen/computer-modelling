@@ -4,8 +4,8 @@ layout(binding = 1) buffer dcA2 { float A2[]; };
 layout(rgba8, binding = 4) uniform writeonly image2D img;
 layout(local_size_x = 20, local_size_y = 20, local_size_z = 1) in;
 
-const int W = 1920;
-const int H = 1080;
+const int W = 800;
+const int H = 600;
 
 int per(int x, int nx)
 {
