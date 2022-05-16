@@ -27,9 +27,6 @@ void ofApp::setup()
     A2.bindBase(GL_SHADER_STORAGE_BUFFER, 1);
 }
 
-//--------------------------------------------------------------
-int tick = 0;
-
 void ofApp::update()
 {
     static int c = 1;
@@ -37,8 +34,8 @@ void ofApp::update()
     A1.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + c);
     A2.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + 1 - c);
 
-    float *data1, *data2;
     float density1 = 0.0f, density2 = 0.0f;
+    float *data1, *data2;
     data1 = A1.map<float>(GL_READ_ONLY);
     data2 = A2.map<float>(GL_READ_ONLY);
     for (int i = 0; i < W * H; ++i)
@@ -54,7 +51,7 @@ void ofApp::update()
         density1 /= float(W * H);
         density2 /= float(W * H);
 
-        float ratio = density1 / density2;
+        float ratio = density1 / density2 - 3.0f;
 
         std::ofstream file("density.txt", ios::app);
         file << tick << "\t" << ratio << std::endl;

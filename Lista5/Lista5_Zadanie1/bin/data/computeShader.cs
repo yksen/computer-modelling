@@ -1,4 +1,4 @@
-#version 440
+#version 450
 layout(binding = 0) buffer dcA1 { float A1[]; };
 layout(binding = 1) buffer dcA2 { float A2[]; };
 layout(rgba8, binding = 4) uniform writeonly image2D img;

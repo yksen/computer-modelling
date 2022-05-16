@@ -18,6 +18,8 @@ public:
 	ofTexture texture;
 	ofShader shader;
 
+	int tick = 0;
+
 	float A1cpu[W * H];
 	float A2cpu[W * H];
 };
