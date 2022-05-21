@@ -2,8 +2,8 @@
 
 #include "ofMain.h"
 
-#define W 800
-#define H 600
+#define W 1920
+#define H 1080
 
 class ofApp : public ofBaseApp
 {
