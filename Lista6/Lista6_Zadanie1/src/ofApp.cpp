@@ -31,12 +31,12 @@ void ofApp::setup()
 
     Sand1cpu[W / 2 + (H / 2 * W)] = 1.0f;
 
-    for (int x = 0; x < W; ++x)
-    {
-        Groundcpu[x + (H - 1) * W] = 1.0f;
-        Sand1cpu[x + (H - 1) * W] = 0.0f;
-        Sand2cpu[x + (H - 1) * W] = 0.0f;
-    }
+    // for (int x = 0; x < W; ++x)
+    // {
+    //     Groundcpu[x + (H - 1) * W] = 1.0f;
+    //     Sand1cpu[x + (H - 1) * W] = 0.0f;
+    //     Sand2cpu[x + (H - 1) * W] = 0.0f;
+    // }
 
     Sand1.allocate(W * H * sizeof(float), Sand1cpu, GL_DYNAMIC_DRAW);
     Sand2.allocate(W * H * sizeof(float), Sand2cpu, GL_DYNAMIC_DRAW);
@@ -55,6 +55,7 @@ void ofApp::update()
 
     shader.begin();
     shader.setUniform1i("c", c);
+    shader.setUniform4i("mousePos", ofGetMouseX(), ofGetMouseY(), ofGetMousePressed(0), ofGetMousePressed(2));
     shader.dispatchCompute(W / 8, H / 8, 1);
     shader.end();
 }

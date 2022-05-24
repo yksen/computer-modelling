@@ -3,7 +3,7 @@
 #include "ofMain.h"
 
 #define W 1280
-#define H 720
+#define H 2880
 
 class ofApp : public ofBaseApp
 {

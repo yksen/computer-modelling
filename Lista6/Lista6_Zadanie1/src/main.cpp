@@ -9,4 +9,5 @@ int main()
 
 	ofCreateWindow(settings);
 	ofRunApp(new ofApp());
+	rand();
 }
