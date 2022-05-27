@@ -18,7 +18,7 @@ void ofApp::setup()
         for (int y = 0; y < H; y++)
         {
             int idx = x + y * W;
-            if (dist(mt) < 0.25f)
+            if (dist(mt) < 0.7f)
                 A1cpu[idx] = 1.0f;
             else
                 A1cpu[idx] = 0.0f;
@@ -38,37 +38,26 @@ void ofApp::update()
     A1.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + c);
     A2.bindBase(GL_SHADER_STORAGE_BUFFER, 0 + 1 - c);
 
-    float density1 = 0.0f, density2 = 0.0f;
-    float *data1, *data2;
+    shader.begin();
+    shader.dispatchCompute(W / 20, H / 20, 1);
+    shader.end();
+
+    float aliveCount = 0.0f;
+    float *data1;
     data1 = A1.map<float>(GL_READ_ONLY);
-    data2 = A2.map<float>(GL_READ_ONLY);
     for (int x = 0; x < W; ++x)
         for (int y = 0; y < H; ++y)
         {
             int idx = x + y * W;
-            density1 += data1[idx];
-            density2 += data2[idx];
+            aliveCount += data1[idx];
         }
     A1.unmap();
-    A2.unmap();
 
-    if (tick > 0)
-    {
-        density1 /= float(W * H);
-        density2 /= float(W * H);
-
-        float ratio = density1 / density2;
-
-        std::ofstream file("density.txt", ios::app);
-        file << tick << "\t" << density1 << "\t" << density2 << std::endl;
-        file.close();
-    }
+    std::ofstream file("ratio_0.70.txt", ios::app);
+    file << tick << "\t" << aliveCount << "\t" << W * H - aliveCount << std::endl;
+    file.close();
 
     ++tick;
-
-    shader.begin();
-    shader.dispatchCompute(W / 20, H / 20, 1);
-    shader.end();
 }
 
 //--------------------------------------------------------------

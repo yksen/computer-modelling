@@ -51,11 +51,10 @@ void main()
     neighborsCount += int(A1[idx8]);
 
     if (neighborsCount == 4 || neighborsCount == 6 || neighborsCount == 7 || neighborsCount == 8 || neighborsCount == 9)
-        A1[idx0] = 1.0f;
+        A2[idx0] = 1.0f;
     else
-        A1[idx0] = 0.0f;
+        A2[idx0] = 0.0f;
 
-    A2[idx0] = A1[idx0];
     vec4 col = vec4(A1[idx0], A1[idx0], A1[idx0], 1);
     imageStore(img, ivec2(gl_GlobalInvocationID.xy), col);
 }
