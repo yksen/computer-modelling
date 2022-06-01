@@ -55,6 +55,7 @@ void ofApp::update()
 
     shader.begin();
     shader.setUniform1i("c", c);
+    shader.setUniform1i("time", ofGetElapsedTimef());
     shader.setUniform4i("mousePos", ofGetMouseX(), ofGetMouseY(), ofGetMousePressed(0), ofGetMousePressed(2));
     shader.dispatchCompute(W / 8, H / 8, 1);
     shader.end();
