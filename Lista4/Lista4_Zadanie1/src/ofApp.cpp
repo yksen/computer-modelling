@@ -2,7 +2,7 @@
 
 void ofApp::setup()
 {
-    shader.setupShaderFromFile(GL_COMPUTE_SHADER, "computeShader.cs");
+    shader.setupShaderFromFile(GL_COMPUTE_SHADER, "computeShader.glsl");
     shader.linkProgram();
 
     A1.allocate(W * H * sizeof(float), A1cpu, GL_DYNAMIC_DRAW);

@@ -4,7 +4,7 @@
 
 void ofApp::setup()
 {
-    shader.setupShaderFromFile(GL_COMPUTE_SHADER, "computeShader.cs");
+    shader.setupShaderFromFile(GL_COMPUTE_SHADER, "computeShader.glsl");
     shader.linkProgram();
 
     texture.allocate(W, H, GL_RGBA8);
